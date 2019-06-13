@@ -28,7 +28,7 @@ module CsvHelper
                 accessory_name = csv[1][csv_item_i]
                 current_accessory_size = csv[1][0..csv_item_i]
                 previous_matched_indices = current_accessory_size.each_index.select{ |i| current_accessory_size[i] == accessory_name }
-                if previous_matched_indices.present?
+                if previous_matched_indices.present? && !csv[0][0..csv_item_i].include?('All')
                   accessory_size = csv[0].compact[previous_matched_indices.size - 1]
                 else
                   accessory_size = 'All'
