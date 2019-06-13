@@ -1,27 +1,6 @@
 require 'csv'
 module CsvHelper
-  # module BaseTypes
-  #   def inventory(file)
-  #     Inventory.new()
-  #   end
-
-  #   def product_prices
-
-  #   end
-
-  #   def accessory_compatibility
-
-  #   end
-
-    
-
-
-  # end
-
-  
-
   class Importer
-    # extend BaseTypes
     class << self
       def import()
         ActiveRecord::Base.transaction do
@@ -38,8 +17,22 @@ module CsvHelper
             end
           end
 
-          # filename = "#{Rails.root}/lib/assets/Accessory Compatibility.csv"
-          # CSV.read(filename)
+          filename = "#{Rails.root}/lib/assets/Accessory Compatibility.csv"
+          csv = CSV.read(filename)
+          csv.each_with_index do |csv_row, csv_row_i|
+            next if !csv_row.first.present?
+            product = Product.find_by(name: csv_row.first)
+            if product
+              csv_row.each_with_index do |csv_item, csv_item_i|
+                next if !csv_item
+                accessory_name = csv[1][csv_item_i]
+                accessory_size = csv[0][i]
+                accessory = Accessory.find_by(name: accessory_name, size: accessory_size)
+                product.accessories << accessory if accessory
+              end
+              product.save
+            end
+          end
         end
       end
     end
@@ -111,7 +104,7 @@ module CsvHelper
             csv_data = get_csv_data(row)
             if csv_data
               hashed_csv_values = Hash[ @csv_headers.zip(csv_data) ]
-              accessory = Accessory.find_or_create_by(name: hashed_csv_values['Description'], size: hashed_csv_values['Size'])
+              accessory = Accessory.find_or_create_by(name: hashed_csv_values['Description'], size: hashed_csv_values['Size'].downcase)
               FIELD_MAPPINGS.each do |csv_key, model_field_key|
                 value = hashed_csv_values[csv_key]
                 accessory.send("#{model_field_key}=", value) if value
@@ -119,7 +112,7 @@ module CsvHelper
               accessory.save
             end
           rescue => ex
-            binding.pry
+
           end
         end
       end
@@ -146,38 +139,4 @@ module CsvHelper
       end
     end
   end
-
-  # class Accessories
-
-  # end
-
-  # class ProductPrices
-
-  # end
-
-  # class AccessoryCompatibility
-
-  # end
-
-  # class PurchaseOrders
-
-  # end
-
-  # class Accessories
-
-  # end
-
-  # class StuffedAnimals
-
-  # end
-
-  # class StuffedAnimals
-
-  # end
-
-  # class Accessories
-
-  # end
-
-
 end
