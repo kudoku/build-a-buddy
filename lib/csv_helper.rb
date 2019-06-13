@@ -24,14 +24,15 @@ module CsvHelper
             product = Product.find_by(name: csv_row.first)
             if product
               csv_row.each_with_index do |csv_item, csv_item_i|
-                next if !csv_item
+                next if !csv_item || csv_item_i == 0
                 accessory_name = csv[1][csv_item_i]
                 previous_matched_indices = csv_row[0..csv_item_i].each_index.select{ |i| csv_row[i] == csv_item }
                 if previous_matched_indices.present?
-                  accessory_size = csv[0][previous_matched_indices.size - 1]
+                  accessory_size = csv[0].compact[previous_matched_indices.size - 1]
                 else
                   accessory_size = 'All'
                 end
+                binding.pry if accessory_size == nil
                 accessory = Accessory.find_by(name: accessory_name, size: accessory_size.downcase)
                 product.accessories << accessory if accessory
               end
