@@ -39,6 +39,12 @@ module CsvHelper
               product.save
             end
           end
+
+          filename = "#{Rails.root}/lib/assets/Purchase Orders.csv"
+          csv = CSV.read(filename)
+          csv.each_with_index do |csv_row, csv_row_i|
+            
+          end
         end
       end
     end

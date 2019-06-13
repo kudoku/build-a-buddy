@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_12_210009) do
+ActiveRecord::Schema.define(version: 2019_06_13_045447) do
 
   create_table "accessories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.decimal "price", precision: 8, scale: 2
@@ -44,6 +44,36 @@ ActiveRecord::Schema.define(version: 2019_06_12_210009) do
     t.index ["product_id"], name: "index_category_products_on_product_id"
   end
 
+  create_table "order_item_accessories", primary_key: ["order_item_id", "accessory_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "order_item_id", null: false
+    t.bigint "accessory_id", null: false
+    t.index ["accessory_id"], name: "index_order_item_accessories_on_accessory_id"
+    t.index ["order_item_id"], name: "index_order_item_accessories_on_order_item_id"
+  end
+
+  create_table "order_item_products", primary_key: ["order_item_id", "product_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "order_item_id", null: false
+    t.bigint "product_id", null: false
+    t.index ["order_item_id"], name: "index_order_item_products_on_order_item_id"
+    t.index ["product_id"], name: "index_order_item_products_on_product_id"
+  end
+
+  create_table "order_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "order_id"
+    t.decimal "total", precision: 8, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+  end
+
+  create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.datetime "order_date"
+    t.decimal "total", precision: 8, scale: 2
+    t.decimal "subtotal", precision: 8, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "products", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "parent_product_id"
     t.decimal "price", precision: 8, scale: 2
@@ -59,4 +89,13 @@ ActiveRecord::Schema.define(version: 2019_06_12_210009) do
     t.index ["parent_product_id_id"], name: "index_products_on_parent_product_id_id"
   end
 
+  create_table "related_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "order_item_id"
+    t.bigint "product_id"
+    t.integer "rank"
+    t.index ["order_item_id"], name: "index_related_items_on_order_item_id"
+    t.index ["product_id"], name: "index_related_items_on_product_id"
+  end
+
+  add_foreign_key "order_items", "orders"
 end
